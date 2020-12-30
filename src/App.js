@@ -1,23 +1,15 @@
-import logo from './logo.svg';
-import './App.css';
-
+import React from 'react';
+import './App.css'
+import Yo from './yo.jpeg'
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1 className='title'>단원증</h1>
+      <h2>Y&C 임신부</h2>
+      <img width="250px" src={Yo} alt="profile"/>
+      <h5>소속:본사</h5>
+      <h1>구 예 지</h1>
+      <span>YE JI GOO</span>
     </div>
   );
 }
