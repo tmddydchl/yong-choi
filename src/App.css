@@ -10,3 +10,11 @@
     margin-top: 0px;
     background-color: #85dcbc; 
 }
+.yo{
+    align-items: center;
+}
+button{
+    margin-left: 50%;
+    display: block;
+    text-align: center;
+}
