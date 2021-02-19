@@ -18,3 +18,6 @@ button{
     display: block;
     text-align: center;
 }
+.option {
+    margin-left: 50px;
+}

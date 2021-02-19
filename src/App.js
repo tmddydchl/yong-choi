@@ -1,90 +1,125 @@
 import React from 'react';
 import './App.css'
-import {signInWithGoogle} from './components/firebase/firebase.utils'
-
-import {auth, userProfile, saveToFireStore, firestore, getTheTestObjFromFireStore, updateTheTestObjInsideFireStore, deleteTheTestObjInsideFireStore} from './components/firebase/firebase.utils'
-
+import Main from './Main'
+import { connect } from "react-redux"
+import AddJobInfo from './components/Add-Job-Info//AddJobInfo'
+import JobPage from './components/Job-Page/JobPage'
+import {
+    BrowserRouter as Router, Route, Switch, Redirect
+} from 'react-router-dom';
+import Header from './components/header/Header'
+import SignInAndSignUpPage from './components/sign-in-and-sign-out/SignInAndSignUpPage'
+import {
+	auth,
+	createUserProfileDocument,
+	// addCollectionAndItem,
+} from "./components/firebase/firebase.utils";
+import { setCurrentUser } from "./components/redux/user/user-actions"
 class App extends React.Component {
-  constructor(props){
-    super(props);
-    this.state={
-      currentUser:null,
-      signInStatus:"Google",
-      item:''
-    }
-    this.handleChange=this.handleChange.bind(this)
-    this.handleDelete=this.handleDelete.bind(this)
-    this.handleSubmit=this.handleSubmit.bind(this)
-    this.handleUpdate=this.handleUpdate.bind(this)
-  }
-  test=null;
-  unsubscribeFromAuth=null
-  componentDidMount(){
-    this.unsubscribeFromAuth = auth.onAuthStateChanged(async user => {
-      this.setState({currentUser:user},()=>{console.log(this.state)})
-      if (user) {
-        this.setState({signInStatus:"Sign Out"})
-        // const userAuth= await this.state.currentUser
-        userProfile(user)
-      }
-      else if (!user){
-        this.setState({signInStatus:"Google"})
-      }
-      // const userAuth= await this.state.currentUser
-      // console.log(userAuth.uid)
-      // userProfile(user)
-    })
-    const ref=firestore.collection('yoyo')
-    this.test=ref.onSnapshot(
-      async function heyhey(snapshot){
-        console.log(snapshot);
-        const refMap=getTheTestObjFromFireStore(snapshot)
-        console.log(refMap)
-      }
-    )
-  }
-  componentWillUnmount(){
-    this.unsubscribeFromAuth()
-  }
-  handleChange= async (e)=>{
-    const item = e.target.value
-    this.setState({item:item})
-  }
-  handleSubmit=(e)=>{
-    e.preventDefault()
-    const dummyCollectionRef="yoyo"
-    saveToFireStore(dummyCollectionRef,this.state.currentUser)
-  }
-  handleUpdate=(e)=>{
-    e.preventDefault()
-    const dummyUpdate="heyo"
-    updateTheTestObjInsideFireStore(this.state.currentUser,dummyUpdate)
-  }
-  handleDelete=(e)=>{
-    e.preventDefault()
-    deleteTheTestObjInsideFireStore(this.state.currentUser)
-  }
+  	// constructor() {
+	// 	super();
+	// 	this.state = {
+	// 		currentUser: null,
+	// 	};
+	// }
+
+	// above is replaced with redux
+	unsubscribeFromAuth = null;
+
+	componentDidMount() {
+		const {
+			setCurrentUser,
+			// collections
+		} = this.props;
+		this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
+			console.log(userAuth);
+			// this is function inside auth library.
+			// this.setState({currentUser:user}) // this grabs the users data when auth.onAuthStateChanged gives the data of an user that has logged in. Remember with monogodb token needs to be stored somewhere (usually local storage)to authenticate the user however this function does all that automatically.
+			// createUserProfileDocument(userAuth)
+			if (userAuth) {
+				const userId = await createUserProfileDocument(userAuth);
+				userId.onSnapshot((userData) => {
+					// onSnapshot is built function in firebase that retrives data associated with the 'id' from the google login.
+					// this.setState (// without redux
+					// 	{
+					// 		currentUser: {
+					// 			id: userData.id,
+					// 			...userData.data(),
+					// 		},
+					// 	},
+					// 	() => {
+					// 		console.log(this.state);
+					// 	}
+					// );
+					setCurrentUser(
+						// instead of saving the state locally it is passed to redux store
+						{
+							id: userData.id,
+							...userData.data(),
+						}
+						// ,
+						// () => {
+						// 	console.log(this.state);
+						// }
+					);
+				});
+			}
+			//this.setState({currentUser:userAuth}) -- with out redux
+			setCurrentUser(userAuth); // -- with redux. This is necessary when user logs out and userAuth becomes 'null' the currentUser will store the value of null
+			// addCollectionAndItem(
+			// 	"collections",
+			// 	collections.map(({ title, items }) => {
+			// 		return {
+			// 			title,
+			// 			items,
+			// 		};
+			// 	})
+			// );
+		});
+	}
+	componentWillUnmount() {
+		this.unsubscribeFromAuth();
+	}
+
+  
   render(){
-  const signIn = this.state.signInStatus
   return (
     <div className="App">
-      <div className='yo'>
-      <h1 className='title'>Search Here</h1>
-      <form >
-        <input type='text' name='item' onChange={this.handleChange}/>
-        <button type='submit'>Search</button>
-      </form>
-      <a href='/'>All Jobs</a>
-      <button onClick={signInWithGoogle}>{signIn}</button>
-      <button onClick={this.handleSubmit}>Set Test</button>
-      <button onClick={()=>auth.signOut()}>sign out</button>
-      <button onClick={this.handleUpdate}>Update Test</button>
-      <button onClick={this.handleDelete}>Delete Test</button>
-      </div>
+      <Router>
+      <Header />
+      <Switch>
+      <Route exact path='/' component={Main}/>
+      <Route path='/yourjob' component={AddJobInfo}/>
+      <Route path='/alljob' component={JobPage}/>
+      
+      <Route
+								exact
+								path="/signin"
+								render={() => {
+									return this.props.currentUser ? ( // what this will do if if currentUser is not 'null' it will redirect the page to the home page
+										<Redirect to="/" />
+									) : (
+										<SignInAndSignUpPage />
+									);
+								}}
+							/>
+      </Switch>
+      </Router>
     </div>
     
   );
   }
 }
+const mapStateToProps = (state) => {
+	return {
+		currentUser: state.users.currentUser,
+		// collections: selectCollections(state),
+	};
+};
+// above can be changed with reselector but I have decided not to because I need to know how the basic level look like without implementing selectors.
 
-export default App;
+const mapDispatchToProps = (dispatch) => {
+	return { setCurrentUser: (user) => dispatch(setCurrentUser(user)) }; 
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

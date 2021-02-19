@@ -96,7 +96,7 @@ export const userProfile= async (auth,item)=>{
 	const snapShot = await userRef.get();
 	console.log(snapShot)
 }
-export const saveToFireStore=async (ref,user)=>{
+export const saveToFireStore=async (ref,user, info)=>{
 	const userCollectionRef=firestore.collection(ref)
 	console.log(userCollectionRef)
 	const batch = firestore.batch()
@@ -106,9 +106,10 @@ export const saveToFireStore=async (ref,user)=>{
 	// 		console.log(docRef)
 	// 		batch.set(docRef,haha)
 	// })
-	const userDocRef=userCollectionRef.doc(`${user.uid}`)
+	const userDocRef=userCollectionRef.doc(`${user.id}`)
 	console.log(userDocRef)
-	const testItemToAdd={Test:"Test"}
+	// const testItemToAdd={Test:"Test"}
+	const testItemToAdd={info}
 	batch.set(userDocRef,testItemToAdd)
 	return await batch.commit()
 }
@@ -116,7 +117,7 @@ export const getTheTestObjFromFireStore=(userDocRef)=>{
 	const userDocs=userDocRef.docs.map(
 		function a(userDoc){
 			const userDocData = userDoc.data()
-			return console.log(userDocData.Test)
+			return console.log(userDocData.info)
 		}
 	)
 	console.log(userDocs)

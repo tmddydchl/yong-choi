@@ -1,0 +1,22 @@
+.sign-in {
+	width: 380px;
+	display: flex;
+	flex-direction: column;
+
+	.title {
+		margin: 10px 0;
+    }
+    
+    .buttons{
+        display:flex;
+        justify-content: space-between;
+    }
+    .google-icon{
+        width: 45px;
+        height: 45px;
+        background-color: #FFFFFF;
+        margin-top: 2px;
+        margin-right: 8px;
+        // margin-left: -100px;;
+    }
+}
