@@ -1,7 +1,10 @@
 .sign-in {
 	width: 380px;
 	display: flex;
-	flex-direction: column;
+    flex-direction: column;
+    // .input:invalid{
+    //     box-shadow: none
+    // }
 
 	.title {
 		margin: 10px 0;

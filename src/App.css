@@ -1,4 +1,4 @@
-.App{
+/* .App{
     width: 300px;
     border: black 1px solid;
     align-items: center ;
@@ -20,4 +20,18 @@ button{
 }
 .option {
     margin-left: 50px;
+} */
+
+body {
+  font-family: "Roboto", sans-serif;
+  padding: 5%;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}
+
+* {
+  box-sizing: border-box;
 }

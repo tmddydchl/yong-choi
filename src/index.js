@@ -1,6 +1,6 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./App";
 import { Provider } from "react-redux";
 // this provider function of react-redux library let you access the 'store'(which stores all the states) and "Reducers".
 // Three libraries are needed to use react: redux, redux-logger,react-redux.
@@ -10,11 +10,11 @@ import { PersistGate } from "redux-persist/integration/react"; // Just like abov
 import { store, persistor } from "../src/components/redux/store";
 ReactDOM.render(
   <Provider store={store}>
-		<React.StrictMode>
-			<PersistGate persistor={persistor}>
-				<App />
-			</PersistGate>
-		</React.StrictMode>
-	</Provider>,
-  document.getElementById('root')
+    <React.StrictMode>
+      <PersistGate persistor={persistor}>
+        <App />
+      </PersistGate>
+    </React.StrictMode>
+  </Provider>,
+  document.getElementById("root")
 );
